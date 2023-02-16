@@ -11,5 +11,6 @@ Icon(IconData(movieIcon,fontFamily: 'MaterialIcons'),color: green,),
 Icon(IconData(sportIcon,fontFamily: 'MaterialIcons'),color: yellow,),
 Icon(IconData(travelIcon,fontFamily: 'MaterialIcons'),color: deepPink,),
 Icon(IconData(shopIcon,fontFamily: 'MaterialIcons'),color: lightBlue,),
+
  ];
 }

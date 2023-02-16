@@ -15,52 +15,60 @@ class HomeView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: SafeArea(
-            child: ListView(
-      children: [
-        Padding(
-          padding: EdgeInsets.all(4.0.wp),
-          child: Text(
-            "My List",
-            style: TextStyle(fontSize: 24.0.sp, fontWeight: FontWeight.bold),
+          child: ListView(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(4.0.wp),
+                child: Text(
+                  "My List",
+                  style: TextStyle(fontSize: 24.0.sp, fontWeight: FontWeight.bold),
+                ),
+              ),
+              Obx(
+                () => GridView.count(
+                  crossAxisCount: 2,
+                  shrinkWrap: true,
+                  physics: const ClampingScrollPhysics(),
+                  children: [
+                    ...controller.tasks
+                        .map((element) => LongPressDraggable(
+                            data: element,
+                            onDragStarted: () => controller.changeDelete(true),
+                            onDraggableCanceled: (_, __) => controller.changeDelete(false),
+                            onDragEnd: (_) => controller.changeDelete(false),
+                            feedback: Opacity(
+                              opacity: 0.8,
+                              child: TaskCard(task: element),
+                            ),
+                            child: TaskCard(task: element)))
+                        .toList(),
+                    AddCard()
+                  ],
+                ),
+              )
+            ],
           ),
         ),
-        Obx(
-          () => GridView.count(
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            physics:const  ClampingScrollPhysics(),
-            children: [
-             ...controller.tasks.map((element) => LongPressDraggable(
-              data: element,
-              onDragStarted: () => controller.changeDelete(true),
-              onDraggableCanceled: (_,__) => controller.changeDelete(false),
-              onDragEnd: (_) => controller.changeDelete(false),
-              feedback: Opacity(opacity: 0.8,
-              child: TaskCard(task: element),),
-              child: TaskCard(task: element)) ).toList(),
-              AddCard()],
-            ),
-        )
-      ],
-    ),
-    ),
-    floatingActionButton: DragTarget<Task>(
-      builder: (_,__,___){
-        return Obx( 
-          ()=>
-        FloatingActionButton(
-          backgroundColor: controller.deleteing.value? Colors.red : Colors.blue,
-          onPressed: () => Get.to(()=>AddDialog(),transition: Transition.downToUp),
-        child: Icon(controller.deleteing.value? Icons.delete :Icons.add,
-        ),
-        ),
-      );
-      },
-      onAccept: (Task task){
-        controller.deleteTask(task);
-        EasyLoading.showSuccess('Delete Sucess');
-      },
-    )
-    );
+        floatingActionButton: DragTarget<Task>(
+          builder: (_, __, ___) {
+            return Obx(
+              () => FloatingActionButton(
+                backgroundColor: controller.deleteing.value ? Colors.red : Colors.blue,
+                onPressed: () {
+                  if (controller.tasks.isNotEmpty) {
+                    Get.to(() => AddDialog(), transition: Transition.downToUp);
+                  }else{
+                    EasyLoading.showInfo('Please create your task type');
+                  }
+                },
+                child: Icon(controller.deleteing.value ? Icons.delete : Icons.add,),
+              ),
+            );
+          },
+          onAccept: (Task task) {
+            controller.deleteTask(task);
+            EasyLoading.showSuccess('Delete Sucess');
+          },
+        ));
   }
 }
